@@ -1,0 +1,14 @@
+{
+  "name": "littlegiant/silverstripe-persistentgridfield",
+  "type": "silverstripe-module",
+  "description": "GridField with persistent state for SilverStripe",
+  "authors": [
+    {
+      "name": "Tom Alexander",
+      "email": "tom.alexander@littlegiant.co.nz"
+    }
+  ],
+  "require": {
+    "composer/installers": "~1.0"
+  }
+}
