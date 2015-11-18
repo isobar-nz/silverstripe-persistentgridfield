@@ -16,13 +16,13 @@ class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionPr
         $button = new GridField_FormAction(
             $gridField,
             'ResetState',
-            'ResetState',
+            'Reset',
             'ResetState',
             null
         );
 
         return array(
-            'after' => '<div class="cms-content-actions cms-content-controls south">' . $button->Field() . '</div>'
+            'after' => '<div style="padding-left: 0;" class="cms-content-actions cms-content-controls south">' . $button->Field() . '</div>'
         );
 
     }
