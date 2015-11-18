@@ -18,6 +18,16 @@ class PersistentGridField extends GridField
         $this->getConfig()->addComponent($resetButton);
     }
 
+    public function getStateHash()
+    {
+        $vars = $this->getRequest()->getVars();
+        unset($vars['url']);
+        return 'previousGridState_' . substr(md5(serialize(array(
+            $this->Link(),
+            $vars
+        ))), 0, 8);
+    }
+
     /**
      * @param array $data
      * @param Form $form
@@ -27,9 +37,8 @@ class PersistentGridField extends GridField
     public function gridFieldAlterAction($data, $form, SS_HTTPRequest $request)
     {
         $data = $request->requestVars();
+        $stateHash = $this->getStateHash();
         $name = $this->getName();
-        $old = 'previousGridState' . substr(md5(serialize(array($this->Link()))), 0, 8);
-
         $fieldData = null;
 
         if(isset($data[$name])) {
@@ -43,7 +52,7 @@ class PersistentGridField extends GridField
                 $stateChange = Session::get($matches[1]);
                 $actionName = $stateChange['actionName'];
                 if($actionName === 'ResetState') {
-                    Session::set($old, null);
+                    Session::set($stateHash, null);
                     $this->state = new GridState($this);
                 }
             }
@@ -69,7 +78,7 @@ class PersistentGridField extends GridField
         }
 
         // The state is stored in the session so that we can access it on the next page load
-        Session::set($old, $this->state->Value());
+        Session::set($stateHash, $this->state->Value());
 
         if($request->getHeader('X-Pjax') === 'CurrentField') {
             return $this->FieldHolder();
@@ -84,9 +93,9 @@ class PersistentGridField extends GridField
      */
     public function FieldHolder($properties = array())
     {
-        $old = 'previousGridState' . substr(md5(serialize(array($this->Link()))), 0, 8);
+        $stateHash = $this->getStateHash();
 
-        if($previousState = Session::get($old)) {
+        if($previousState = Session::get($stateHash)) {
             $this->state->setValue($previousState);
         }
 
