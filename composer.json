@@ -6,9 +6,14 @@
     {
       "name": "Tom Alexander",
       "email": "tom.alexander@littlegiant.co.nz"
+    },
+    {
+      "name": "Stevie Mayhew",
+      "email": "stevie.mayhew@littlegiant.co.nz"
     }
   ],
   "require": {
-    "composer/installers": "~1.0"
+    "composer/installers": "~1.0",
+    "silverstripe/framework": "*"
   }
 }

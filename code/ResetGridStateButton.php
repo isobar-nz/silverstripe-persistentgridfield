@@ -1,11 +1,26 @@
 <?php
 
 /**
- * This is a stub button, the action is handled in PersistentGridField->gridFieldAlterAction()
  * Class ResetGridStateButton
+ *
+ * This is a stub button, the action is handled in PersistentGridField->gridFieldAlterAction()
  */
 class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionProvider, GridField_URLHandler
 {
+    /**
+     * Fragment to write the button to.
+     *
+     * @var string
+     */
+    protected $targetFragment;
+
+    /**
+     * @param string $targetFragment The HTML fragment to write the button into
+     */
+    public function __construct($targetFragment = "after")
+    {
+        $this->targetFragment = $targetFragment;
+    }
 
     /**
      * @param $gridField
@@ -16,13 +31,13 @@ class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionPr
         $button = new GridField_FormAction(
             $gridField,
             'ResetState',
-            'Reset',
+            'Reset Grid',
             'ResetState',
             null
         );
 
         return array(
-            'after' => '<div style="padding-left: 0;" class="cms-content-actions cms-content-controls south">' . $button->Field() . '</div>'
+            $this->targetFragment => $button->Field()
         );
 
     }
@@ -47,8 +62,22 @@ class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionPr
         );
     }
 
-    public function handleAction(GridField $gridField, $actionName, $arguments, $data) {}
+    /**
+     * @param GridField $gridField
+     * @param $actionName
+     * @param $arguments
+     * @param $data
+     */
+    public function handleAction(GridField $gridField, $actionName, $arguments, $data)
+    {
+    }
 
-    public function handleResetState(GridField $gridField, $request = null) {}
+    /**
+     * @param GridField $gridField
+     * @param null $request
+     */
+    public function handleResetState(GridField $gridField, $request = null)
+    {
+    }
 
 }
