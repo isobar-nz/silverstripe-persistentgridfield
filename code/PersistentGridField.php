@@ -103,10 +103,10 @@ class PersistentGridField extends GridField
      * Update a hash set in memory and add the new value to it. If the current link has a hash which matches then set
      * that hashes value to the supplied one. Add the new hash to the array of hashes stored in memory.
      *
-     * @param $hash
+     * @param $newHash
      * @param $value
      */
-    public function updateHashSet($hash, $value) {
+    public function updateHashSet($newHash, $value) {
         $currentHashes = Session::get('PersistentHashes') ?: array();
         if ($currentHashes) {
             foreach ($currentHashes as $link => $hash) {
@@ -116,7 +116,7 @@ class PersistentGridField extends GridField
             }
         }
 
-        $persistentHashes = array_merge($currentHashes, array($this->Link() => $hash));
+        $persistentHashes = array_merge($currentHashes, array($this->Link() => $newHash));
         Session::set('PersistentHashes', $persistentHashes);
     }
 
