@@ -18,14 +18,34 @@ class PersistentGridField extends GridField
         $this->getConfig()->addComponent($resetButton);
     }
 
+    /**
+     * @return string
+     */
     public function getStateHash()
     {
-        $vars = $this->getRequest()->getVars();
-        unset($vars['url']);
-        return 'previousGridState_' . substr(md5(serialize(array(
-            $this->Link(),
-            $vars
-        ))), 0, 8);
+
+        $getVars = Controller::curr()->getRequest()->getVars();
+        $getAction = Controller::curr()->getRequest()->getVar('action_search');
+        $gridActionHash = 'gridActionHash_' . substr(md5(serialize($getVars)), 0, 8);
+
+        if($getAction) {
+            if(!Session::get($gridActionHash)) {
+                Session::set($gridActionHash, $getVars);
+                Session::set($this->getStateHash(), null);
+                return false;
+            }
+        }
+
+        return 'previousGridState_' . substr(md5(serialize(array($this->Link()))), 0, 8);
+    }
+
+
+    public function setStateHash($state)
+    {
+        if($hash = $this->getStateHash()) {
+            Session::set($this->getStateHash(), $state);
+            return $state;
+        }
     }
 
     /**
@@ -78,7 +98,7 @@ class PersistentGridField extends GridField
         }
 
         // The state is stored in the session so that we can access it on the next page load
-        Session::set($stateHash, $this->state->Value());
+        $this->setStateHash($this->state->Value());
 
         if($request->getHeader('X-Pjax') === 'CurrentField') {
             return $this->FieldHolder();
@@ -102,5 +122,6 @@ class PersistentGridField extends GridField
         return parent::FieldHolder($properties);
 
     }
+
 
 }
