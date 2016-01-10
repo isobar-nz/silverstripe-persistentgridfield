@@ -39,7 +39,6 @@ class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionPr
         return array(
             $this->targetFragment => $button->Field()
         );
-
     }
 
     /**
@@ -79,5 +78,4 @@ class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionPr
     public function handleResetState(GridField $gridField, $request = null)
     {
     }
-
 }

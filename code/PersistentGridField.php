@@ -13,7 +13,8 @@ class PersistentGridField extends GridField
      * @param SS_List|null $dataList
      * @param GridFieldConfig|null $config
      */
-    public function __construct($name, $title = null, SS_List $dataList = null, GridFieldConfig $config = null) {
+    public function __construct($name, $title = null, SS_List $dataList = null, GridFieldConfig $config = null)
+    {
         parent::__construct($name, $title, $dataList, $config);
         $this->getConfig()->addComponent(new GridFieldButtonRow('after'));
         $this->getConfig()->addComponent(new ResetGridStateButton('buttons-after-right'));
@@ -93,7 +94,7 @@ class PersistentGridField extends GridField
      */
     public function setStateHash($state)
     {
-        if($hash = $this->getStateHash()) {
+        if ($hash = $this->getStateHash()) {
             Session::set($hash, $state);
         }
         $this->updateHashSet($hash, $state);
@@ -106,7 +107,8 @@ class PersistentGridField extends GridField
      * @param $newHash
      * @param $value
      */
-    public function updateHashSet($newHash, $value) {
+    public function updateHashSet($newHash, $value)
+    {
         $currentHashes = Session::get('PersistentHashes') ?: array();
         if ($currentHashes) {
             foreach ($currentHashes as $link => $hash) {
@@ -133,31 +135,31 @@ class PersistentGridField extends GridField
 
         // Check if we have encountered a reset action. We need to clear the state here before
         // the other components start accessing it.
-        foreach($data as $dataKey => $dataValue) {
-            if(preg_match('/^action_gridFieldAlterAction\?StateID=(.*)/', $dataKey, $matches)) {
+        foreach ($data as $dataKey => $dataValue) {
+            if (preg_match('/^action_gridFieldAlterAction\?StateID=(.*)/', $dataKey, $matches)) {
                 $stateChange = Session::get($matches[1]);
                 $actionName = $stateChange['actionName'];
-                if($actionName === 'ResetState') {
+                if ($actionName === 'ResetState') {
                     Session::set($stateHash, null);
                     $this->state = new GridState($this);
                 }
             }
         }
 
-        foreach($data as $dataKey => $dataValue) {
-            if(preg_match('/^action_gridFieldAlterAction\?StateID=(.*)/', $dataKey, $matches)) {
+        foreach ($data as $dataKey => $dataValue) {
+            if (preg_match('/^action_gridFieldAlterAction\?StateID=(.*)/', $dataKey, $matches)) {
                 $stateChange = Session::get($matches[1]);
                 $actionName = $stateChange['actionName'];
 
                 $arguments = array();
 
-                if(isset($stateChange['args'])) {
+                if (isset($stateChange['args'])) {
                     $arguments = $stateChange['args'];
                 };
 
                 $html = $this->handleAlterAction($actionName, $arguments, $data);
 
-                if($html) {
+                if ($html) {
                     return $html;
                 }
             }
@@ -166,7 +168,7 @@ class PersistentGridField extends GridField
         // The state is stored in the session so that we can access it on the next page load
         $this->setStateHash($this->state->Value());
 
-        if($request->getHeader('X-Pjax') === 'CurrentField') {
+        if ($request->getHeader('X-Pjax') === 'CurrentField') {
             return $this->FieldHolder();
         }
 
@@ -181,12 +183,10 @@ class PersistentGridField extends GridField
     {
         $stateHash = $this->getStateHash();
 
-        if($previousState = Session::get($stateHash)) {
+        if ($previousState = Session::get($stateHash)) {
             $this->state->setValue($previousState);
         }
 
         return parent::FieldHolder($properties);
-
     }
-
 }
