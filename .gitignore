@@ -51,3 +51,4 @@ vendor/*
 cms/*
 framework/*
 composer.lock
+/nbproject
