@@ -5,4 +5,4 @@ After:
 ---
 
 LittleGiant\PersistentGridField\PersistentGridField:
-  show_grid_reset_button: false
+  show_grid_reset_button: true
