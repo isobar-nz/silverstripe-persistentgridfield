@@ -1,6 +1,6 @@
 {
   "name": "littlegiant/silverstripe-persistentgridfield",
-  "type": "silverstripe-module",
+  "type": "silverstripe-vendormodule",
   "description": "GridField with persistent state for SilverStripe",
   "authors": [
     {
@@ -14,6 +14,6 @@
   ],
   "require": {
     "composer/installers": "~1.0",
-    "silverstripe/framework": "*"
+    "silverstripe/framework": "4.*"
   }
 }
