@@ -1,0 +1,8 @@
+---
+name: silverstripe-persistentgridfield
+After:
+  - 'framework/*'
+---
+
+LittleGiant\PersistentGridField\PersistentGridField:
+  show_grid_reset_button: false

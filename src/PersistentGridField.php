@@ -29,8 +29,12 @@ class PersistentGridField extends GridField
     public function __construct($name, $title = null, SS_List $dataList = null, GridFieldConfig $config = null)
     {
         parent::__construct($name, $title, $dataList, $config);
-        $this->getConfig()->addComponent(new GridFieldButtonRow('after'));
-        $this->getConfig()->addComponent(new ResetGridStateButton('buttons-after-right'));
+        if (
+            self::config()->get('show_grid_reset_button')
+            && !$this->getConfig()->getComponentByType(ResetGridStateButton::class)
+        ) {
+            $this->getConfig()->addComponent(new ResetGridStateButton('buttons-before-right'));
+        }
     }
 
     /**
