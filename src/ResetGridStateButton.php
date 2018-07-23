@@ -1,10 +1,18 @@
 <?php
-
 /**
  * Class ResetGridStateButton
  *
  * This is a stub button, the action is handled in PersistentGridField->gridFieldAlterAction()
  */
+
+namespace LittleGiant\PersistentGridField;
+
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridField_ActionProvider;
+use SilverStripe\Forms\GridField\GridField_FormAction;
+use SilverStripe\Forms\GridField\GridField_HTMLProvider;
+use SilverStripe\Forms\GridField\GridField_URLHandler;
+
 class ResetGridStateButton implements GridField_HTMLProvider, GridField_ActionProvider, GridField_URLHandler
 {
     /**
