@@ -1,9 +1,0 @@
----
-name: silverstripe-persistentgridfield
-After:
-  - 'framework/*'
-  - 'cms/*'
----
-LeftAndMain:
-  extra_requirements_javascript:
-    - 'silverstripe-persistentgridfield/javascript/PersistentGridfield.js'
