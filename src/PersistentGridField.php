@@ -33,7 +33,8 @@ class PersistentGridField extends GridField
             self::config()->get('show_grid_reset_button')
             && !$this->getConfig()->getComponentByType(ResetGridStateButton::class)
         ) {
-            $this->getConfig()->addComponent(new ResetGridStateButton('buttons-before-right'));
+            $this->getConfig()->addComponent(new GridFieldButtonRow('after'));
+            $this->getConfig()->addComponent(new ResetGridStateButton('buttons-after-right'));
         }
     }
 
