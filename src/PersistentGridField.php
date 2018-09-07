@@ -1,10 +1,23 @@
 <?php
-
 /**
  * Class PersistentGridField
  *
  * Stores the state of a GridField between requests
  */
+
+namespace LittleGiant\PersistentGridField;
+
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldButtonRow;
+use SilverStripe\Forms\GridField\GridFieldConfig;
+use SilverStripe\Forms\GridField\GridState;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\ORM\SS_List;
+use SilverStripe\View\HTML;
+
 class PersistentGridField extends GridField
 {
     /**
@@ -16,8 +29,13 @@ class PersistentGridField extends GridField
     public function __construct($name, $title = null, SS_List $dataList = null, GridFieldConfig $config = null)
     {
         parent::__construct($name, $title, $dataList, $config);
-        $this->getConfig()->addComponent(new GridFieldButtonRow('after'));
-        $this->getConfig()->addComponent(new ResetGridStateButton('buttons-after-right'));
+        if (
+            self::config()->get('show_grid_reset_button')
+            && !$this->getConfig()->getComponentByType(ResetGridStateButton::class)
+        ) {
+            $this->getConfig()->addComponent(new GridFieldButtonRow('after'));
+            $this->getConfig()->addComponent(new ResetGridStateButton('buttons-after-right'));
+        }
     }
 
     /**
@@ -62,7 +80,7 @@ class PersistentGridField extends GridField
     public function pushCurrentActionHash($hash, $hashes)
     {
         $array = array_merge($hashes, array($this->Link() => $hash));
-        Session::set('PersistentGridActions', $array);
+        Controller::curr()->getRequest()->getSession()->set('PersistentGridActions', $array);
     }
 
     /**
@@ -73,7 +91,7 @@ class PersistentGridField extends GridField
      */
     public function clearUnusedActionHashes($currentHash)
     {
-        $persistentHashes = Session::get('PersistentGridActions') ?: array();
+        $persistentHashes = Controller::curr()->getRequest()->getSession()->get('PersistentGridActions') ?: array();
 
         if ($persistentHashes) {
             foreach ($persistentHashes as $link => $hash) {
@@ -95,7 +113,7 @@ class PersistentGridField extends GridField
     public function setStateHash($state)
     {
         if ($hash = $this->getStateHash()) {
-            Session::set($hash, $state);
+            Controller::curr()->getRequest()->getSession()->set($hash, $state);
         }
         $this->updateHashSet($hash, $state);
     }
@@ -109,38 +127,40 @@ class PersistentGridField extends GridField
      */
     public function updateHashSet($newHash, $value)
     {
-        $currentHashes = Session::get('PersistentHashes') ?: array();
+        $session = Controller::curr()->getRequest()->getSession();
+        $currentHashes = $session->get('PersistentHashes') ?: array();
         if ($currentHashes) {
             foreach ($currentHashes as $link => $hash) {
                 if ($link == $this->Link()) {
-                    Session::set($hash, $value);
+                    $session->set($hash, $value);
                 }
             }
         }
 
         $persistentHashes = array_merge($currentHashes, array($this->Link() => $newHash));
-        Session::set('PersistentHashes', $persistentHashes);
+        $session->set('PersistentHashes', $persistentHashes);
     }
 
     /**
      * @param array $data
      * @param Form $form
-     * @param SS_HTTPRequest $request
-     * @return HTML|HTMLText|mixed
+     * @param HTTPRequest $request
+     * @return HTML|DBHTMLText|mixed
      */
-    public function gridFieldAlterAction($data, $form, SS_HTTPRequest $request)
+    public function gridFieldAlterAction($data, $form, HTTPRequest $request)
     {
         $data = $request->requestVars();
         $stateHash = $this->getStateHash();
+        $session = $request->getSession();
 
         // Check if we have encountered a reset action. We need to clear the state here before
         // the other components start accessing it.
         foreach ($data as $dataKey => $dataValue) {
             if (preg_match('/^action_gridFieldAlterAction\?StateID=(.*)/', $dataKey, $matches)) {
-                $stateChange = Session::get($matches[1]);
+                $stateChange = $session->get($matches[1]);
                 $actionName = $stateChange['actionName'];
                 if ($actionName === 'ResetState') {
-                    Session::set($stateHash, null);
+                    $session->set($stateHash, null);
                     $this->state = new GridState($this);
                 }
             }
@@ -148,7 +168,7 @@ class PersistentGridField extends GridField
 
         foreach ($data as $dataKey => $dataValue) {
             if (preg_match('/^action_gridFieldAlterAction\?StateID=(.*)/', $dataKey, $matches)) {
-                $stateChange = Session::get($matches[1]);
+                $stateChange = $session->get($matches[1]);
                 $actionName = $stateChange['actionName'];
 
                 $arguments = array();
@@ -177,13 +197,13 @@ class PersistentGridField extends GridField
 
     /**
      * @param array $properties
-     * @return HTMLText
+     * @return DBHTMLText
      */
     public function FieldHolder($properties = array())
     {
         $stateHash = $this->getStateHash();
 
-        if ($previousState = Session::get($stateHash)) {
+        if ($previousState = Controller::curr()->getRequest()->getSession()->get($stateHash)) {
             $this->state->setValue($previousState);
         }
 
