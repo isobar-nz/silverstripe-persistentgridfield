@@ -204,7 +204,7 @@ class PersistentGridField extends GridField
         $stateHash = $this->getStateHash();
 
         if ($previousState = Controller::curr()->getRequest()->getSession()->get($stateHash)) {
-            $this->state->setValue($previousState);
+            $this->getState(false)->setValue($previousState);
         }
 
         return parent::FieldHolder($properties);
