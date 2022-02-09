@@ -161,7 +161,12 @@ class PersistentGridField extends GridField
                 $actionName = $stateChange['actionName'];
                 if ($actionName === 'ResetState') {
                     $session->set($stateHash, null);
-                    $this->state = new GridState($this);
+                    if (method_exists($this, 'initState')) {
+                        $this->state = null;
+                        $this->getState(false);
+                    } else {
+                        $this->state = new GridState($this);
+                    }
                 }
             }
         }
